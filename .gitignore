@@ -44,4 +44,5 @@ terraform.rc
 
 # End of https://www.toptal.com/developers/gitignore/api/terraform
 
-*secret*
+*secret*.yaml
+*secrets*.yaml
