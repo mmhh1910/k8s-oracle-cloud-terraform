@@ -154,7 +154,7 @@ resource "oci_core_subnet" "vcn_public_subnet" {
 
 resource "oci_containerengine_cluster" "k8s_cluster" {
   compartment_id     = var.compartment_id
-  kubernetes_version = "v1.26.2"
+  kubernetes_version = "v1.27.2"
   name               = "k8s-cluster"
   vcn_id             = module.vcn.vcn_id
 
@@ -185,22 +185,19 @@ locals {
   azs = data.oci_identity_availability_domains.ads.availability_domains[*].name
 }
 
-data "oci_core_images" "latest_image" {
+data "oci_core_images" "latest_image_arm64" {
   compartment_id = var.compartment_id
   operating_system = "Oracle Linux"
   operating_system_version = "7.9"
-  filter {
-    name   = "display_name"
-    values = ["^.*aarch64-.*$"]
-    regex = true
-  }
+  shape = "VM.Standard.A1.Flex"
 }
 
-resource "oci_containerengine_node_pool" "k8s_node_pool" {
+
+resource "oci_containerengine_node_pool" "k8s_node_pool_arm64" {
   cluster_id         = oci_containerengine_cluster.k8s_cluster.id
   compartment_id     = var.compartment_id
-  kubernetes_version = "v1.26.2"
-  name               = "k8s-node-pool"
+  kubernetes_version = "v1.27.2"
+  name               = "k8s-node-pool_arm64"
   node_config_details {
     dynamic placement_configs {
       for_each = local.azs
@@ -220,7 +217,7 @@ resource "oci_containerengine_node_pool" "k8s_node_pool" {
   }
 
   node_source_details {
-    image_id    = data.oci_core_images.latest_image.images.0.id
+    image_id    = data.oci_core_images.latest_image_arm64.images.0.id
     source_type = "image"
   }
 
@@ -232,10 +229,4 @@ resource "oci_containerengine_node_pool" "k8s_node_pool" {
   ssh_public_key = var.ssh_public_key
 }
 
-resource "oci_artifacts_container_repository" "docker_repository" {
-  compartment_id = var.compartment_id
-  display_name   = "kubernetes-repository"
 
-  is_immutable = false
-  is_public    = false
-}

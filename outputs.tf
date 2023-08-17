@@ -6,6 +6,10 @@ output "public_subnet_id" {
   value = oci_core_subnet.vcn_public_subnet.id
 }
 
-output "node_pool_id" {
-  value = oci_containerengine_node_pool.k8s_node_pool.id
+output "node_pool_id_arm64" {
+  value = oci_containerengine_node_pool.k8s_node_pool_arm64.id
 }
+
+#output "node_pool_id_amd64" {
+#  value = oci_containerengine_node_pool.k8s_node_pool_amd64.id
+#}
