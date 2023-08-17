@@ -1,0 +1,5 @@
+´´´
+Build: docker build --push --platform linux/arm64 -t eu-frankfurt-1.ocir.io/frs4lzee0jfi/tor-privoxy:latest .
+
+test: kubectl run -ti curl --image=curlimages/curl:latest --restart=Never --rm -- -v -x socks://tor:9050 https://api.ipify.org?format=json
+´´´
