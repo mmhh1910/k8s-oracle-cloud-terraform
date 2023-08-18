@@ -113,6 +113,18 @@ resource "oci_core_security_list" "public_subnet_sl" {
   } 
 
   ingress_security_rules {
+    protocol    = "6"
+    source      = "0.0.0.0/0"
+    source_type = "CIDR_BLOCK"
+    stateless   = false
+
+    tcp_options {
+      max = 22
+      min = 22
+    }
+  } 
+
+  ingress_security_rules {
     stateless   = false
     source      = "10.0.0.0/16"
     source_type = "CIDR_BLOCK"
@@ -229,4 +241,31 @@ resource "oci_containerengine_node_pool" "k8s_node_pool_arm64" {
   ssh_public_key = var.ssh_public_key
 }
 
+
+data "oci_core_images" "latest_image_amd64" {
+  compartment_id = var.compartment_id
+  operating_system = "Oracle Linux"
+  operating_system_version = "7.9"
+  shape = "VM.Standard.E2.1.Micro"
+}
+
+
+resource "oci_core_instance" "generated_oci_core_instance" {
+	availability_domain = "XlKQ:EU-FRANKFURT-1-AD-3"
+  compartment_id = var.compartment_id
+	create_vnic_details {
+		assign_private_dns_record = "false"
+		assign_public_ip = "true"
+		subnet_id = oci_core_subnet.vcn_public_subnet.id
+	}
+	display_name = "k8s_bastion"
+	metadata = {
+		"ssh_authorized_keys" = var.ssh_public_key
+	}
+	shape = "VM.Standard.E2.1.Micro"
+	source_details {
+    source_id    = data.oci_core_images.latest_image_amd64.images.0.id
+    source_type = "image"
+	}
+}
 
