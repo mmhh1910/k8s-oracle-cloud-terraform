@@ -100,21 +100,21 @@ resource "oci_core_security_list" "public_subnet_sl" {
     }
   }
 
+  # ingress_security_rules {
+  #   protocol    = "6"
+  #   source      = "0.0.0.0/0"
+  #   source_type = "CIDR_BLOCK"
+  #   stateless   = false
+
+  #   tcp_options {
+  #     max = 80
+  #     min = 80
+  #   }
+  # } 
+
   ingress_security_rules {
     protocol    = "6"
-    source      = "0.0.0.0/0"
-    source_type = "CIDR_BLOCK"
-    stateless   = false
-
-    tcp_options {
-      max = 80
-      min = 80
-    }
-  } 
-
-  ingress_security_rules {
-    protocol    = "6"
-    source      = "0.0.0.0/0"
+    source      = var.create_bastion ? "0.0.0.0/0" : "10.0.1.0/24"
     source_type = "CIDR_BLOCK"
     stateless   = false
 
@@ -219,8 +219,8 @@ resource "oci_containerengine_node_pool" "k8s_node_pool_arm64" {
       }
     }
     size = 2
-
   }
+
   node_shape = "VM.Standard.A1.Flex"
 
   node_shape_config {
@@ -250,15 +250,16 @@ data "oci_core_images" "latest_image_amd64" {
 }
 
 
-resource "oci_core_instance" "generated_oci_core_instance" {
-	availability_domain = "XlKQ:EU-FRANKFURT-1-AD-3"
+resource "oci_core_instance" "k8s_bastion" {
+	display_name = "k8s_bastion"
+  count = var.create_bastion ? 1 : 0
+  availability_domain = "XlKQ:EU-FRANKFURT-1-AD-3"
   compartment_id = var.compartment_id
 	create_vnic_details {
 		assign_private_dns_record = "false"
 		assign_public_ip = "true"
 		subnet_id = oci_core_subnet.vcn_public_subnet.id
 	}
-	display_name = "k8s_bastion"
 	metadata = {
 		"ssh_authorized_keys" = var.ssh_public_key
 	}

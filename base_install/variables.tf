@@ -12,3 +12,8 @@ variable "ssh_public_key" {
   type        = string
   description = "The SSH public key to use for connecting to the worker nodes"
 }
+
+variable "create_bastion" {
+  type        = bool
+  description = "If set to true, a bastion host will be created"
+}
