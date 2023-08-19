@@ -2,6 +2,7 @@ provider "oci" {
   region = var.region
 }
 
+
 module "vcn" {
   source  = "oracle-terraform-modules/vcn/oci"
   version = "3.1.0"
@@ -165,7 +166,7 @@ resource "oci_core_subnet" "vcn_public_subnet" {
 }
 
 resource "oci_containerengine_cluster" "k8s_cluster" {
-  compartment_id     = var.compartment_id
+  compartment_id = var.compartment_id
   kubernetes_version = "v1.27.2"
   name               = "k8s-cluster"
   vcn_id             = module.vcn.vcn_id
@@ -207,7 +208,7 @@ data "oci_core_images" "latest_image_arm64" {
 
 resource "oci_containerengine_node_pool" "k8s_node_pool_arm64" {
   cluster_id         = oci_containerengine_cluster.k8s_cluster.id
-  compartment_id     = var.compartment_id
+  compartment_id = var.compartment_id
   kubernetes_version = "v1.27.2"
   name               = "k8s-node-pool_arm64"
   node_config_details {
@@ -270,3 +271,10 @@ resource "oci_core_instance" "k8s_bastion" {
 	}
 }
 
+
+resource "oci_identity_policy" "csi_fss" {
+    compartment_id = var.compartment_id
+    description = "CSI volume plugin to create and manage File Storage resources."
+    name = "csi_fss"
+    statements = ["ALLOW any-user to manage file-family in compartment k8s where request.principal.type = 'cluster'", "ALLOW any-user to use virtual-network-family in compartment k8s where request.principal.type = 'cluster'"]
+}
