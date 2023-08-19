@@ -253,7 +253,7 @@ data "oci_core_images" "latest_image_amd64" {
 resource "oci_core_instance" "k8s_bastion" {
 	display_name = "k8s_bastion"
   count = var.create_bastion ? 1 : 0
-  availability_domain = "XlKQ:EU-FRANKFURT-1-AD-3"
+  availability_domain = local.azs[2]  
   compartment_id = var.compartment_id
 	create_vnic_details {
 		assign_private_dns_record = "false"
