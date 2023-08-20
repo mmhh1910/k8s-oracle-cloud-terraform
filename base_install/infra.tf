@@ -118,6 +118,7 @@ resource "oci_core_security_list" "public_subnet_sl" {
     source      = var.create_bastion ? "0.0.0.0/0" : "10.0.1.0/24"
     source_type = "CIDR_BLOCK"
     stateless   = false
+    description = "Source is 0.0.0.0/0 if TF variable 'create_bastion' is true, otherwise set to 10.0.1.0/24 (private subnet)"
 
     tcp_options {
       max = 22
