@@ -277,8 +277,18 @@ resource "oci_identity_policy" "csi_fss" {
         ]
 }
 
-resource "null_resource" "kubeconfig" {
+resource "null_resource" "outputs" {
   provisioner "local-exec" {
     command = "oci ce cluster create-kubeconfig --cluster-id ${oci_containerengine_cluster.k8s_cluster.id} --file ${path.root}/../outputs/kubectl-k8s-config.${var.deployment_env} --region ${var.region} --token-version 2.0.0 --kube-endpoint PUBLIC_ENDPOINT"
   }
 }
+
+resource "local_file" "envfile" {
+    content     = <<-EOF
+                  export PRIVATE_SUBNET_ID=${oci_core_subnet.vcn_private_subnet.id}
+                  export AV_DOMAIN=${data.oci_identity_availability_domains.ads.availability_domains[0].name}
+                  EOF
+    filename = "${path.root}/../outputs/env_k8s.${var.deployment_env}"
+}
+
+ 
