@@ -3,6 +3,11 @@ provider "oci" {
 }
 
 
+data "oci_identity_compartment" "compartment" {
+	#Required
+	id = var.compartment_id
+}
+
 module "vcn" {
   source  = "oracle-terraform-modules/vcn/oci"
   version = "3.1.0"
@@ -101,18 +106,6 @@ resource "oci_core_security_list" "public_subnet_sl" {
     }
   }
 
-  # ingress_security_rules {
-  #   protocol    = "6"
-  #   source      = "0.0.0.0/0"
-  #   source_type = "CIDR_BLOCK"
-  #   stateless   = false
-
-  #   tcp_options {
-  #     max = 80
-  #     min = 80
-  #   }
-  # } 
-
   ingress_security_rules {
     protocol    = "6"
     source      = var.create_bastion ? "0.0.0.0/0" : "10.0.1.0/24"
@@ -168,7 +161,7 @@ resource "oci_core_subnet" "vcn_public_subnet" {
 
 resource "oci_containerengine_cluster" "k8s_cluster" {
   compartment_id = var.compartment_id
-  kubernetes_version = "v1.27.2"
+  kubernetes_version = var.k8s_version
   name               = "k8s-cluster"
   vcn_id             = module.vcn.vcn_id
 
@@ -201,16 +194,16 @@ locals {
 
 data "oci_core_images" "latest_image_arm64" {
   compartment_id = var.compartment_id
-  operating_system = "Oracle Linux"
-  operating_system_version = "7.9"
-  shape = "VM.Standard.A1.Flex"
+  operating_system = var.k8s_node_config.operating_system
+  operating_system_version = var.k8s_node_config.operating_system_version
+  shape = var.k8s_node_config.k8s_node_shape
 }
 
 
 resource "oci_containerengine_node_pool" "k8s_node_pool_arm64" {
   cluster_id         = oci_containerengine_cluster.k8s_cluster.id
   compartment_id = var.compartment_id
-  kubernetes_version = "v1.27.2"
+  kubernetes_version = var.k8s_version
   name               = "k8s-node-pool_arm64"
   node_config_details {
     dynamic placement_configs {
@@ -223,12 +216,12 @@ resource "oci_containerengine_node_pool" "k8s_node_pool_arm64" {
     size = 2
   }
 
-  node_shape = "VM.Standard.A1.Flex"
+  node_shape = var.k8s_node_config.k8s_node_shape
 
   node_shape_config {
-    memory_in_gbs = 6
-    ocpus         = 1
-  }
+        memory_in_gbs = var.k8s_node_config.memory_in_gbs
+        ocpus = var.k8s_node_config.ocpus
+    }
 
   node_source_details {
     image_id    = data.oci_core_images.latest_image_arm64.images.0.id
@@ -246,9 +239,9 @@ resource "oci_containerengine_node_pool" "k8s_node_pool_arm64" {
 
 data "oci_core_images" "latest_image_amd64" {
   compartment_id = var.compartment_id
-  operating_system = "Oracle Linux"
-  operating_system_version = "7.9"
-  shape = "VM.Standard.E2.1.Micro"
+  operating_system = var.k8s_node_config.operating_system
+  operating_system_version = var.k8s_node_config.operating_system_version
+  shape = var.k8s_node_config.k8s_node_shape
 }
 
 
@@ -265,7 +258,7 @@ resource "oci_core_instance" "k8s_bastion" {
 	metadata = {
 		"ssh_authorized_keys" = var.ssh_public_key
 	}
-	shape = "VM.Standard.E2.1.Micro"
+	shape = var.bastion_shape
 	source_details {
     source_id    = data.oci_core_images.latest_image_amd64.images.0.id
     source_type = "image"
@@ -277,5 +270,8 @@ resource "oci_identity_policy" "csi_fss" {
     compartment_id = var.compartment_id
     description = "CSI volume plugin to create and manage File Storage resources."
     name = "csi_fss"
-    statements = ["ALLOW any-user to manage file-family in compartment k8s where request.principal.type = 'cluster'", "ALLOW any-user to use virtual-network-family in compartment k8s where request.principal.type = 'cluster'"]
+    statements = [
+        "ALLOW any-user to manage file-family in compartment ${data.oci_identity_compartment.compartment.name} where request.principal.type = 'cluster'", 
+        "ALLOW any-user to use virtual-network-family in compartment ${data.oci_identity_compartment.compartment.name} where request.principal.type = 'cluster'"
+        ]
 }
