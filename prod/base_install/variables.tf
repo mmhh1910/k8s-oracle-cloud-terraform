@@ -27,7 +27,7 @@ variable "k8s_node_config" {
   default = {
       memory_in_gbs = 6, 
       ocpus = 1, 
-      k8s_node_shape= "VM.Standard.A1.Flex" 
+      shape= "VM.Standard.A1.Flex" 
       operating_system ="Oracle Linux"
       operating_system_version = "7.9"        
       }
@@ -41,8 +41,14 @@ variable "create_bastion" {
   default = false
 }
 
-variable "bastion_shape" {
-  type        = string
-  default = "VM.Standard.E2.1.Micro"
-  description = "Shape of the compute instance for the bastion host."
+variable "bastion_config" {
+  type = map
+  default = {
+      memory_in_gbs = 2, 
+      ocpus = 1, 
+      shape= "VM.Standard.A1.Flex" 
+      operating_system ="Oracle Linux"
+      operating_system_version = "7.9"        
+      }
+  description = "Settings for the bastion compute instances."
 }

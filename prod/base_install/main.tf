@@ -196,7 +196,7 @@ data "oci_core_images" "latest_image_arm64" {
   compartment_id = var.compartment_id
   operating_system = var.k8s_node_config.operating_system
   operating_system_version = var.k8s_node_config.operating_system_version
-  shape = var.k8s_node_config.k8s_node_shape
+  shape = var.k8s_node_config.shape
 }
 
 
@@ -216,7 +216,7 @@ resource "oci_containerengine_node_pool" "k8s_node_pool_arm64" {
     size = 2
   }
 
-  node_shape = var.k8s_node_config.k8s_node_shape
+  node_shape = var.k8s_node_config.shape
 
   node_shape_config {
         memory_in_gbs = var.k8s_node_config.memory_in_gbs
@@ -237,18 +237,18 @@ resource "oci_containerengine_node_pool" "k8s_node_pool_arm64" {
 }
 
 
-data "oci_core_images" "latest_image_amd64" {
+data "oci_core_images" "latest_image_arm64_bastion" {
   compartment_id = var.compartment_id
-  operating_system = var.k8s_node_config.operating_system
-  operating_system_version = var.k8s_node_config.operating_system_version
-  shape = var.k8s_node_config.k8s_node_shape
+  operating_system = var.bastion_config.operating_system
+  operating_system_version = var.bastion_config.operating_system_version
+  shape = var.bastion_config.shape
 }
 
 
 resource "oci_core_instance" "k8s_bastion" {
 	display_name = "k8s_bastion"
   count = var.create_bastion ? 1 : 0
-  availability_domain = local.azs[2]  
+  availability_domain = local.azs[0]
   compartment_id = var.compartment_id
 	create_vnic_details {
 		assign_private_dns_record = "false"
@@ -258,11 +258,16 @@ resource "oci_core_instance" "k8s_bastion" {
 	metadata = {
 		"ssh_authorized_keys" = var.ssh_public_key
 	}
-	shape = var.bastion_shape
+	shape = var.bastion_config.shape
 	source_details {
-    source_id    = data.oci_core_images.latest_image_amd64.images.0.id
+    source_id    = data.oci_core_images.latest_image_arm64_bastion.images.0.id
     source_type = "image"
 	}
+  shape_config {
+        memory_in_gbs = var.bastion_config.memory_in_gbs
+        ocpus = var.bastion_config.ocpus
+    }
+
 }
 
 
