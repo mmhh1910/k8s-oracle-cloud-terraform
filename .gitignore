@@ -46,3 +46,4 @@ terraform.rc
 
 *secret*.yaml
 *secrets*.yaml
+kubectl-k8s-config

@@ -1,0 +1,12 @@
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: oci-fss-sc
+provisioner: fss.csi.oraclecloud.com
+parameters:
+  # TODO: Should be injected from terraform.fstate
+  availabilityDomain: XlKQ:EU-FRANKFURT-1-AD-1
+  # TODO: Should be injected from terraform.fstate
+  mountTargetSubnetOcid: ocid1.subnet.oc1.eu-frankfurt-1.aaaaaaaaeh4rwlsx6qvm6rmuha57fl5gwnjxvyo6fz3afafd6a36samlwyja
+  encryptInTransit: "false"

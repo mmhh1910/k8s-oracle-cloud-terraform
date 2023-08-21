@@ -1,7 +1,3 @@
-provider "oci" {
-  region = var.region
-}
-
 
 data "oci_identity_compartment" "compartment" {
 	#Required
@@ -112,7 +108,7 @@ resource "oci_core_security_list" "public_subnet_sl" {
     source_type = "CIDR_BLOCK"
     stateless   = false
     description = "Source is 0.0.0.0/0 if TF variable 'create_bastion' is true, otherwise set to 10.0.1.0/24 (private subnet)"
-
+    
     tcp_options {
       max = 22
       min = 22
@@ -279,4 +275,10 @@ resource "oci_identity_policy" "csi_fss" {
         "ALLOW any-user to manage file-family in compartment ${data.oci_identity_compartment.compartment.name} where request.principal.type = 'cluster'", 
         "ALLOW any-user to use virtual-network-family in compartment ${data.oci_identity_compartment.compartment.name} where request.principal.type = 'cluster'"
         ]
+}
+
+resource "null_resource" "kubeconfig" {
+  provisioner "local-exec" {
+    command = "oci ce cluster create-kubeconfig --cluster-id ${oci_containerengine_cluster.k8s_cluster.id} --file ${path.root}/kubectl-k8s-config --region ${var.region} --token-version 2.0.0 --kube-endpoint PUBLIC_ENDPOINT"
+  }
 }
