@@ -213,7 +213,7 @@ resource "oci_containerengine_node_pool" "k8s_node_pool_arm64" {
         subnet_id           = oci_core_subnet.vcn_private_subnet.id
       }
     }
-    size = 2
+    size = var.k8s_node_pool_size
   }
 
   node_shape = var.k8s_node_config.shape

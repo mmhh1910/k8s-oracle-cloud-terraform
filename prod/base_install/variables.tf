@@ -22,6 +22,13 @@ variable "k8s_version" {
   description = "K8s version"
 }
 
+
+variable "k8s_node_pool_size" {
+  type = number
+  default = 2
+  description = "Number of nodes in the k8s node-pool"
+}
+
 variable "k8s_node_config" {
   type = map
   default = {
