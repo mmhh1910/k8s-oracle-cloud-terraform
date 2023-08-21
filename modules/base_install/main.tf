@@ -279,6 +279,6 @@ resource "oci_identity_policy" "csi_fss" {
 
 resource "null_resource" "kubeconfig" {
   provisioner "local-exec" {
-    command = "oci ce cluster create-kubeconfig --cluster-id ${oci_containerengine_cluster.k8s_cluster.id} --file ${path.root}/kubectl-k8s-config --region ${var.region} --token-version 2.0.0 --kube-endpoint PUBLIC_ENDPOINT"
+    command = "oci ce cluster create-kubeconfig --cluster-id ${oci_containerengine_cluster.k8s_cluster.id} --file ${path.root}/../outputs/kubectl-k8s-config.${var.deployment_env} --region ${var.region} --token-version 2.0.0 --kube-endpoint PUBLIC_ENDPOINT"
   }
 }

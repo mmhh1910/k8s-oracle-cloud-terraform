@@ -1,3 +1,7 @@
+variable "deployment_env" {
+  type        = string
+  description = "The deployment environment (prod, test, staging, etc.)"
+}
 
 variable "compartment_id" {
   type        = string
@@ -21,6 +25,7 @@ variable "k8s_version" {
   default = "v1.27.2"
   description = "K8s version"
 }
+
 
 
 variable "k8s_node_pool_size" {

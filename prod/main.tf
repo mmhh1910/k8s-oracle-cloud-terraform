@@ -5,6 +5,8 @@ provider "oci" {
 module "base-install" {
     source = "../modules/base_install"
 
+    deployment_env = "prod"
+
     compartment_id = var.compartment_id
     region = var.region
     ssh_public_key = var.ssh_public_key
