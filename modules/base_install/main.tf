@@ -65,6 +65,7 @@ resource "oci_core_security_list" "private_subnet_sl" {
       max = 31600
     }
   }
+  
 }
 
 resource "oci_core_security_list" "public_subnet_sl" {
@@ -130,6 +131,28 @@ resource "oci_core_security_list" "public_subnet_sl" {
     tcp_options {
       min = 6443
       max = 6443
+    }
+  }
+
+  ingress_security_rules {
+    stateless   = false
+    source      = "0.0.0.0/0"
+    source_type = "CIDR_BLOCK"
+    protocol    = "6"
+    tcp_options {
+      min = 80
+      max = 80
+    }
+  }
+
+  ingress_security_rules {
+    stateless   = false
+    source      = "0.0.0.0/0"
+    source_type = "CIDR_BLOCK"
+    protocol    = "6"
+    tcp_options {
+      min = 443
+      max = 443
     }
   }
 }
