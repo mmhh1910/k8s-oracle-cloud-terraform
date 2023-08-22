@@ -292,3 +292,26 @@ resource "local_file" "envfile" {
 }
 
  
+resource "oci_file_storage_mount_target" "mount_target" {
+	availability_domain = local.azs[0]
+	compartment_id = var.compartment_id
+	display_name = "k8s-MountTarget"
+	subnet_id = oci_core_subnet.vcn_private_subnet.id
+}
+
+
+resource "kubernetes_storage_class" "oci-fss-sc" {
+  depends_on = [null_resource.outputs ]
+  metadata {
+    name = "oci-fss-sc"
+    annotations = {
+      "storageclass.kubernetes.io/is-default-class" = "true"
+    }
+  }
+  storage_provisioner = "fss.csi.oraclecloud.com"
+  parameters = {
+    availabilityDomain = local.azs[0]
+    mountTargetOcid = oci_file_storage_mount_target.mount_target.id
+    encryptInTransit = false
+  }
+} 
