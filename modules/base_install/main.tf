@@ -277,7 +277,7 @@ resource "oci_identity_policy" "csi_fss" {
         ]
 }
 
-resource "null_resource" "outputs" {
+resource "null_resource" "kubectl-k8s-config-generation" {
   provisioner "local-exec" {
     command = "oci ce cluster create-kubeconfig --cluster-id ${oci_containerengine_cluster.k8s_cluster.id} --file ${path.root}/../outputs/kubectl-k8s-config.${var.deployment_env} --region ${var.region} --token-version 2.0.0 --kube-endpoint PUBLIC_ENDPOINT"
   }
@@ -301,7 +301,7 @@ resource "oci_file_storage_mount_target" "mount_target" {
 
 
 resource "kubernetes_storage_class" "oci-fss-sc" {
-  depends_on = [null_resource.outputs ]
+  depends_on = [null_resource.kubectl-k8s-config-generation ]
   metadata {
     name = "oci-fss-sc"
     annotations = {
@@ -315,3 +315,5 @@ resource "kubernetes_storage_class" "oci-fss-sc" {
     encryptInTransit = false
   }
 } 
+
+

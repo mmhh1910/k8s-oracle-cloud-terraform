@@ -48,3 +48,4 @@ terraform.rc
 *secrets*.yaml
 *kubectl-k8s-config*
 outputs/*
+wordpress-values.yaml

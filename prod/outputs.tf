@@ -25,3 +25,8 @@ output "node_pool_id_arm64" {
 output "bastion_ip" {
   value  = module.base-install.bastion_ip
 }
+
+
+output "wp_ip" {
+  value = module.base-install.wp_ip
+}

@@ -6,6 +6,13 @@ provider "kubernetes" {
   config_path = "../outputs/kubectl-k8s-config.prod"
 }
 
+provider "helm" {
+  kubernetes {
+    config_path = "../outputs/kubectl-k8s-config.prod"
+  }
+
+}
+
 module "base-install" {
     source = "../modules/base_install"
 
