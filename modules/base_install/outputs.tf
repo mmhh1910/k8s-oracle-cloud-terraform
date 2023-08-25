@@ -26,6 +26,6 @@ output "bastion_ip" {
   value = var.create_bastion ? oci_core_instance.k8s_bastion[0].public_ip : "Bastion not created"
 }
 
-output "wp_ip" {
-  value =  oci_core_public_ip.wp_ip.ip_address
-}
+# output "wp_ip" {
+#   value =  oci_core_public_ip.wp_ip.ip_address
+# }

@@ -27,6 +27,6 @@ output "bastion_ip" {
 }
 
 
-output "wp_ip" {
-  value = module.base-install.wp_ip
-}
+# output "wp_ip" {
+#   value = module.base-install.wp_ip
+# }

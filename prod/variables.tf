@@ -1,3 +1,8 @@
+variable "tenancy_ocid" {
+  type        = string
+  description = "The tenanany id."
+}
+
 
 variable "compartment_id" {
   type        = string
@@ -58,4 +63,15 @@ variable "bastion_config" {
       operating_system_version = "7.9"        
       }
   description = "Settings for the bastion compute instances."
+
+}
+
+variable "ingress_email_issuer" {
+  default     = "no-reply@example.cloud"
+  description = "You must replace this email address with your own. The certificate provider will use this to contact you about expiring certificates, and issues related to your account."
+}
+
+variable "ingress_hosts" {
+  default     = ""
+  description = "Enter a valid full qualified domain name (FQDN). You will need to map the domain name to the EXTERNAL-IP address on your DNS provider (DNS Registry type - A). If you have multiple domain names, include separated by comma. e.g.: mushop.example.com,catshop.com"
 }

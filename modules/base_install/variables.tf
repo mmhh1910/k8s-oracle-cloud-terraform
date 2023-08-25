@@ -3,6 +3,12 @@ variable "deployment_env" {
   description = "The deployment environment (prod, test, staging, etc.)"
 }
 
+variable "tenancy_ocid" {
+  type        = string
+  description = "The tenanany id."
+}
+
+
 variable "compartment_id" {
   type        = string
   description = "The compartment id to create the resources in. Has to be pre-created"

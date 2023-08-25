@@ -29,5 +29,12 @@ module "base-install" {
 
     create_bastion = var.create_bastion
     bastion_config=var.bastion_config
+
+    ingress_email_issuer = var.ingress_email_issuer
+
+    ingress_hosts = var.ingress_hosts
+
+    tenancy_ocid = var.tenancy_ocid
+
 }
 
