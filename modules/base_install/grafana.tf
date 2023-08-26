@@ -107,18 +107,6 @@ dashboards:
       gnetId: 13594
       revision: 1
       datasource: Oracle Cloud Infrastructure Metrics
-    loki-stack:
-      gnetId: 14055
-      revision: 5
-      datasource:
-      - name: DS_PROMETHEUS
-        value: Prometheus
-      - name: DS_LOKI
-        value: Loki      
-    loki-k8s-log:
-      gnetId: 15141
-      revision: 1
-      datasource: Loki
 dashboardProviders:
    dashboardproviders.yaml:
      apiVersion: 1
