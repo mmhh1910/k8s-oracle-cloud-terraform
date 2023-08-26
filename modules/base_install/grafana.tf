@@ -1,8 +1,3 @@
-# Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
-# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
-# 
-
-# Grafana variables
 variable "grafana_enabled" {
   default     = true
   description = "Enable Grafana Dashboards. Includes example dashboards and Prometheus, OCI Logging and OCI Metrics datasources"
@@ -112,6 +107,18 @@ dashboards:
       gnetId: 13594
       revision: 1
       datasource: Oracle Cloud Infrastructure Metrics
+    loki-stack:
+      gnetId: 14055
+      revision: 5
+      datasource:
+      - name: DS_PROMETHEUS
+        value: Prometheus
+      - name: DS_LOKI
+        value: Loki      
+    loki-k8s-log:
+      gnetId: 15141
+      revision: 1
+      datasource: Loki
 dashboardProviders:
    dashboardproviders.yaml:
      apiVersion: 1
@@ -148,12 +155,13 @@ datasources:
       type: prometheus
       url: http://prometheus-server.default.svc.cluster.local
       access: proxy
-      isDefault: true
+      isDefault: false
       disableDeletion: true
       editable: false
     - name: Oracle Cloud Infrastructure Metrics
       type: oci-metrics-datasource
       access: proxy
+      isDefault: false
       disableDeletion: true
       editable: true
       jsonData:
@@ -163,6 +171,7 @@ datasources:
     - name: Oracle Cloud Infrastructure Logs
       type: oci-logs-datasource
       access: proxy
+      isDefault: false
       disableDeletion: true
       editable: true
       jsonData:
@@ -251,3 +260,7 @@ output "grafana_admin_password" {
   value     = var.grafana_enabled ? local.grafana_admin_password : null
   sensitive = true
 }
+
+
+
+
