@@ -1,18 +1,29 @@
-# Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
-# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
-# 
 
-# Grafana variables
 variable "grafana_enabled" {
   default     = true
   description = "Enable Grafana Dashboards. Includes example dashboards and Prometheus, OCI Logging and OCI Metrics datasources"
 }
 
 
+resource oci_identity_dynamic_group grafana_dg {
+  compartment_id = var.tenancy_ocid
+  description = "grafana dg"
+  matching_rule = "Any {All {instance.compartment.id = '${var.compartment_id}'}}"
+  name          = "grafana_dg"
+  count = var.grafana_enabled ? 1 : 0
+}
 
-# Grafana Helm chart
-## https://github.com/grafana/helm-charts/blob/main/charts/grafana/README.md
-## https://artifacthub.io/packages/helm/grafana/grafana
+resource oci_identity_policy grafana_policy {
+  compartment_id = var.tenancy_ocid
+  description = "grafana_policy"
+  name = "grafana_policy"
+  statements = [
+    "allow dynamicgroup grafana_dg to read metrics in tenancy",
+    "allow dynamicgroup grafana_dg to read compartments in tenancy",
+  ]
+  count = var.grafana_enabled ? 1 : 0
+}
+
 resource "helm_release" "grafana" {
 
   name       = "grafana"
@@ -21,7 +32,6 @@ resource "helm_release" "grafana" {
   version    = "6.56.5"
   namespace  = "default"
   wait       = false
-
   set {
     name  = "grafana\\.ini.server.root_url"
     value = "%(protocol)s://%(domain)s:%(http_port)s/grafana"
@@ -40,6 +50,7 @@ initChownData:
 securityContext:
   runAsNonRoot: false
   runAsUser: 0
+envFromSecret: grafana-dashboard-secrets
 dashboards:
   default:
     k8s-cluster:
@@ -214,7 +225,8 @@ resource "kubernetes_ingress_v1" "grafana" {
 
   count = (var.grafana_enabled && var.ingress_nginx_enabled) ? 1 : 0
 }
-## Kubernetes Secret: Grafana Admin Password
+
+
 data "kubernetes_secret" "grafana" {
   metadata {
     name      = "grafana"

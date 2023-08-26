@@ -32,8 +32,8 @@ variable "k8s_node_pool_size" {
 variable "k8s_node_config" {
   type = map
   default = {
-      memory_in_gbs = 6, 
-      ocpus = 1, 
+      memory_in_gbs = 12, 
+      ocpus = 2, 
       shape= "VM.Standard.A1.Flex" 
       operating_system ="Oracle Linux"
       operating_system_version = "7.9"        
