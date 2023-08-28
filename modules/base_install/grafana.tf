@@ -107,6 +107,10 @@ dashboards:
       gnetId: 13594
       revision: 1
       datasource: Oracle Cloud Infrastructure Metrics
+    velero:
+      gnetId: 16829
+      revision: 3
+      datasource: Prometheus
 dashboardProviders:
    dashboardproviders.yaml:
      apiVersion: 1
