@@ -5,12 +5,10 @@ https://velero.io/docs/v1.12/customize-installation/#default-pod-volume-backup-t
 
 https://docs.oracle.com/en-us/iaas/Content/Identity/Tasks/managingcredentials.htm#create-secret-key
 
-File credentials-velero:
+# File credentials-velero:
 [default]
 aws_access_key_id=...
 aws_secret_access_key=...
-
-
 
 
 # get home region
