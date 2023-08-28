@@ -44,8 +44,9 @@ terraform.rc
 
 # End of https://www.toptal.com/developers/gitignore/api/terraform
 
-*secret*.yaml
-*secrets*.yaml
+*secret*.*
+*secrets*.*
 *kubectl-k8s-config*
+credentials-velero
 outputs/*
 wordpress-values.yaml

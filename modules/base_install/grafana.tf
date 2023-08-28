@@ -34,16 +34,16 @@ resource "helm_release" "grafana" {
   version    = "6.56.5"
   namespace  = "default"
   wait       = false
-  set {
-    name  = "grafana\\.ini.server.root_url"
-    value = "%(protocol)s://%(domain)s:%(http_port)s/grafana"
-    type  = "string"
-  }
+  # set {
+  #   name  = "grafana\\.ini.server.root_url"
+  #   value = "%(protocol)s://%(domain)s:%(http_port)s/grafana"
+  #   type  = "string"
+  # }
 
-  set {
-    name  = "grafana\\.ini.server.serve_from_sub_path"
-    value = "true"
-  }
+  # set {
+  #   name  = "grafana\\.ini.server.serve_from_sub_path"
+  #   value = "true"
+  # }
 
   values = [
     <<EOF
@@ -180,13 +180,12 @@ resource "kubernetes_ingress_v1" "grafana" {
     namespace   = "default"
     annotations = local.ingress_nginx_annotations
   }
-  spec {
+   spec {
     ingress_class_name = "nginx"
     rule {
+      host ="grafana.xn--marcusmnnig-xfb.de"
       http {
         path {
-          path      = "/grafana(/|$)(.*)"
-          path_type = "Prefix"
           backend {
             service {
               name = "grafana"
@@ -199,36 +198,16 @@ resource "kubernetes_ingress_v1" "grafana" {
       }
     }
 
-    dynamic "rule" {
-      for_each = local.ingress_hosts
-      content {
-        host = rule.value
-        http {
-          path {
-            path      = "/grafana(/|$)(.*)"
-            path_type = "Prefix"
-            backend {
-              service {
-                name = "grafana"
-                port {
-                  number = 80
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-
     tls {
       secret_name = "grafana-${var.ingress_cluster_issuer}-tls"
-      hosts       = local.ingress_hosts
+      hosts       = ["grafana.xn--marcusmnnig-xfb.de"]
     }
   }
   depends_on = [helm_release.ingress_nginx, helm_release.grafana]
 
   count = (var.grafana_enabled && var.ingress_nginx_enabled) ? 1 : 0
 }
+
 ## Kubernetes Secret: Grafana Admin Password
 data "kubernetes_secret" "grafana" {
   metadata {
