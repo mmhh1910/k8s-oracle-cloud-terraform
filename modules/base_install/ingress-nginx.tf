@@ -74,6 +74,19 @@ resource "helm_release" "ingress_nginx" {
     type  = "string"
   }
 
+  set {
+    name  = "controller.podAnnotations.prometheus\\.io/port"
+    value = "10254"
+    type  = "string"
+  }
+
+  set {
+    name  = "controller.podAnnotations.prometheus\\.io/scrape"
+    value = "true"
+    type  = "string"
+  }
+
+
   count = var.ingress_nginx_enabled ? 1 : 0
 }
 
