@@ -30,4 +30,4 @@ velero backup get
 
 velero backup describe backup-name --details
 
-velero schedule create backup-schedule --schedule="0 20 * * *" --ttl 168h0m0s
+velero schedule create backup-schedule --schedule="00 0 * * *" --ttl 168h0m0s
