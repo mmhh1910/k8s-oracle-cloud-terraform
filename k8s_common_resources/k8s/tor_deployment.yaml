@@ -28,6 +28,23 @@ spec:
             - name: privoxy
               containerPort: 8118
           resources: {}
+          livenessProbe:
+            exec:
+              command:
+                - "curl"
+                - "--socks5-hostname"
+                - "127.0.0.1:9050"
+                - "-s"
+                - "-o"
+                - "/dev/null"
+                - "-w"
+                - '"%{http_code}"'
+                - "https://api.ipify.org?format=json"
+            initialDelaySeconds: 300
+            periodSeconds: 900
+            successThreshold: 1
+            failureThreshold: 1
+            timeoutSeconds: 10
       imagePullSecrets:
         - name: registry-secret
 

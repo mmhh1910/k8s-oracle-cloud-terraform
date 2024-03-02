@@ -10,4 +10,7 @@ DataDirectory /var/lib/tor
 User tor
 AutomapHostsOnResolve 1
 
+ExitNodes {pl} StrictNodes 1
+
+
 %include /etc/torrc.d/*.conf

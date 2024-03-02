@@ -2,7 +2,7 @@ FROM dockage/alpine:3.16.2-openrc
 
 COPY assets/root/ /
 
-RUN apk --no-cache --update --upgrade add tor privoxy socat \
+RUN apk --no-cache --update --upgrade add tor privoxy socat curl \
     && mv /etc/privoxy/default.action.new /etc/privoxy/default.action \
     && mv /etc/privoxy/user.action.new /etc/privoxy/user.action \
     && mv /etc/privoxy/default.filter.new /etc/privoxy/default.filter \
